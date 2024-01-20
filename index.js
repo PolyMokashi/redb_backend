@@ -5,7 +5,9 @@ const bloodDetails = require("./Models/bloodDetails");
 const cors = require("cors");
 // const bloodDetails = require("./Models/blsoodDetails");
 const bloodRequest = require("./Models/bloodRequest");
+const router = require("./controller/login");
 const hospitalDetails = require("./Models/hospitalDetails");
+const statusSchema = require("./Models/status");
 const app = express();
 app.use(
   cors({
@@ -93,11 +95,55 @@ app.post("/add/new/donors", async (req, res) => {
   }
 });
 
+
+app.delete("/delete/blood/details/:id", async (req, res) => {
+  await bloodDetails
+    .findByIdAndDelete(req.params.id)
+    .then((data) => res.json(data))
+    .catch((err) => res.json(err));
+});
+
+app.get("/delete/blood/details/:id", async (req, res) => {
+  await bloodDetails
+    .findById(req.params.id)
+    .then((data) => res.json(data))
+    .catch((err) => res.json(err));
+});
+
 app.delete("/delete/request/:id", async (req, res) => {
   await bloodRequest
     .findByIdAndDelete(req.params.id)
     .then((data) => res.json(data))
     .catch((err) => res.json(err));
+});
+app.delete("/delete/donors/:id", async (req, res) => {
+  await donors
+    .findByIdAndDelete(req.params.id)
+    .then((data) => res.json(data))
+    .catch((err) => res.json(err));
+});
+
+app.post("/post/status", async (req, res) => {
+  const { id , name, stat}= req.body;
+  const status =  new  statusSchema({
+          _id:id,
+          name:name,
+          stat:stat
+  })
+ 
+  try {
+   await status.save()
+   res.status(200).json(status)
+ } catch (error) {
+   res.json(error);
+ }
+});
+
+app.get("/get/status", async (req, res) => {
+  await statusSchema
+    .find()
+    .then((data) => res.json(data))
+    .catch((err) => res.json({ error: "error occured" }));
 });
 
 app.post("/post/data", async (req, res) => {
@@ -109,6 +155,7 @@ app.post("/post/data", async (req, res) => {
     res.json(error);
   }
 });
+app.use("/v1/auth",router);
 
 app.listen(port, () =>
   console.log(`server running on http://localhost:${port}`)
