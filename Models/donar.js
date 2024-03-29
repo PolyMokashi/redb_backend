@@ -20,11 +20,6 @@ gender:{
     type:String,
     required:true
 },
-state:{
-    type:String,
-    required:true 
-},
-
 weight:{
     type:String,
     required:true
